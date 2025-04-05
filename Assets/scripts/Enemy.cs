@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     public GameObject hurtbox;
     Rigidbody GrabRb;
 
+
     //Animations
     public Animator moves; //animator
 
@@ -34,14 +35,12 @@ public class Enemy : MonoBehaviour
     public bool gotGrabbed;
     public bool isBeingHit;
     public bool shaking;
+    public bool Recovered;
+    public bool OnTheGroundHurt;
 
     //knockbacks
     public Rigidbody rb;//rigidbody that moves player
-    public float lightK;//normal attack knockback
-    public float heavyK;//big knockback
-    public float upK;//upwards knockbak for launcher
-    public float K;
-    public float Kup;
+
     public float chain;
     public bool maxchain;
 
@@ -63,11 +62,15 @@ public class Enemy : MonoBehaviour
 
     public void Start()
     {
+        hp = 10;
+        //moves.SetBool("Alive", true);
+        moves.SetBool("Hurt", false);
+       
         gotHit = false;
 
         rb = GetComponent<Rigidbody>();
 
-        Physics.IgnoreLayerCollision(0, 8);
+        Physics.IgnoreLayerCollision(9, 8);
         //Physics.IgnoreLayerCollision(0, 4);
 
 
@@ -96,12 +99,14 @@ public class Enemy : MonoBehaviour
 
         gotHit = true;
 
-        if (gotHit == true ) { 
+        if (gotHit == true ) {
 
-        if (hitvar >= 0)
-        {
-            moves.Play("Hitted");
-                gotHit = false;
+            moves.SetBool("Hurt", true);
+
+           
+        
+                //moves.Play("Hitted");
+                //gotHit = false;
 
                 Vector3 directionAwayFromAttacker = (transform.position - enemyObject.transform.position).normalized;
 
@@ -115,28 +120,22 @@ public class Enemy : MonoBehaviour
                rb.linearVelocity = knockbackDirection;
 
 
-            }
+                Vector3 normalizedDirection = knockbackDirection.normalized;
 
-        if (hitvar < 0)
-        {
-            moves.Play("Hitted2");
-                gotHit=false;
-                Vector3 directionAwayFromAttacker = (transform.position - enemyObject.transform.position).normalized;
+                moves.SetFloat("HorizontalVelocity", normalizedDirection.x);
+                moves.SetFloat("VerticalVelocity", normalizedDirection.y);
 
-                // Apply knockback in that direction
-                Vector3 knockbackDirection = (directionAwayFromAttacker * hitBoxObject.HorizontalKnockback) + (Vector3.up * hitBoxObject.VerticalKnockback);
+                if (hitBoxObject.HorizontalKnockback <2 && hitBoxObject.VerticalKnockback < 2)
+                {
+                    {
+                        moves.Play("Hitted");
+                    }
+                }
 
-                Debug.Log($"Applied Knockback: {knockbackDirection}"); // Debugging
-
-               rb.linearVelocity = Vector3.zero;
-
-               rb.linearVelocity = knockbackDirection;
-            }
+            
 
 
         }
-
-
 
 }
 
@@ -165,6 +164,8 @@ public class Enemy : MonoBehaviour
 
         if (gotGrabbed == true)
         {
+
+
             rb.linearVelocity = Vector3.zero;
             rb.isKinematic = true;
             rb.useGravity = false;
@@ -192,8 +193,14 @@ public class Enemy : MonoBehaviour
     {
         if (hp <= 0)
         {
+            moves.SetBool("Alive", false);
 
+            if (hp > 0)  {
+                moves.SetBool("Alive", true);
+            }
         }
+
+
 
         if (gotGrabbed) {
 
@@ -207,15 +214,18 @@ public class Enemy : MonoBehaviour
         //transform.position = Vector3.Lerp(transform.position, hitBoxObject.transform.position, Time.deltaTime * 10f);
         }   
 
+     
+
     }
 
 
     public void GetThrown(fight player, GameObject playerObject, float horizontal_throwforce, float vertical_throwforce) 
     {
+        moves.SetBool("Hurt", true);
 
         gotGrabbed = false;
 
-        gameObject.layer = LayerMask.NameToLayer("Default");
+        gameObject.layer = LayerMask.NameToLayer("CharacterLayer");
         hurtbox.layer = LayerMask.NameToLayer("Water");
 
         rb.isKinematic = false;
@@ -237,6 +247,9 @@ public class Enemy : MonoBehaviour
 
         Debug.Log(directionAwayFromAttacker);
 
+        moves.SetFloat("HorizontalVelocity", 1);
+        moves.SetFloat("VerticalVelocity", 0);
+
         //Debug.Log($"Applied Horizontal: {horizontalKnockback}, Applied Vertical: {verticalKnockback}");
 
     }
@@ -246,6 +259,26 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+            moves.SetBool("OnAir", false);
+            if (gotHit == true)
+            {
+                Debug.Log("crashed into the ground");
+                moves.SetBool("Hurt", false);
+                OnTheGroundHurt = true;
+                Recover();
+            }
+            
+        }
+
+    }
+
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+            moves.SetBool("OnAir", true);
         }
 
     }
@@ -263,25 +296,43 @@ public class Enemy : MonoBehaviour
     }
 
 
-    //void RestoreSpeed(hitbox collision)
-    //{
-       // moves.speed = 1f;
-       // rb.useGravity = true;
-       /// <summary>
-       /// /GetHit(collision);
-       /// </summary>
-       /// <param //name=""></param>
-       /// <returns></returns>
-
-    //}
 
 
     IEnumerator RestoreSpeedCoroutine(hitbox collision)
     {
-        yield return new WaitForSeconds(0.01f);
+        yield return new WaitForSeconds(0.1f);
         moves.speed = 1f;
         rb.useGravity = true;
         GetHit(collision);
+    }
+
+    public void Recover()
+    {
+        Debug.Log("Recovering");
+        StartCoroutine(RecoverTimer());
+    }
+
+    public void ResetRecover()
+    {
+        Debug.Log("Recovering");
+        StartCoroutine(ResetRecoverTimer());
+    }
+
+    IEnumerator RecoverTimer()
+    {
+        yield return new WaitForSeconds(1f);
+        Debug.Log("Recovered");
+        Recovered = true;
+        OnTheGroundHurt = false;
+        moves.SetBool("Recovered", true);
+        ResetRecover();
+
+    }
+
+    IEnumerator ResetRecoverTimer()
+    {
+        yield return new WaitForSeconds(0.1f);
+        moves.SetBool("Recovered", true);
     }
 
 

@@ -232,9 +232,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suicide: {fileID: 3009365064652288937}
   player: {fileID: 6169994913196166437}
+  playerScript: {fileID: 1431066124101364557}
   anim: {fileID: 901439331371011026}
   hiti: 0
-  VerticalKnockback: 4
+  VerticalKnockback: 8
   HorizontalKnockback: 8
   layerMask:
     serializedVersion: 2
@@ -297,8 +298,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
   m_LocalPosition: {x: -0.00253, y: 0.00522, z: 0.00234}
-  m_LocalScale: {x: 0.0042724, y: 0.0042724, z: 0.0042724}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 680198645765291312}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -390,9 +391,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suicide: {fileID: 4471190154865319407}
   player: {fileID: 6169994913196166437}
+  playerScript: {fileID: 1431066124101364557}
   anim: {fileID: 901439331371011026}
   hiti: 0
-  VerticalKnockback: 2
+  VerticalKnockback: 3
   HorizontalKnockback: 10
   layerMask:
     serializedVersion: 2
@@ -703,6 +705,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suicide: {fileID: 5688392940191606844}
   player: {fileID: 6169994913196166437}
+  playerScript: {fileID: 1431066124101364557}
   anim: {fileID: 901439331371011026}
   hiti: 0
   VerticalKnockback: 7
@@ -1000,11 +1003,11 @@ GameObject:
   - component: {fileID: 6953134104338939273}
   - component: {fileID: 840206522136665345}
   - component: {fileID: 5365163618382329296}
-  - component: {fileID: 5797996164620719568}
   - component: {fileID: 345951337920236564}
   - component: {fileID: 5380350034002460233}
   - component: {fileID: 1431066124101364557}
-  m_Layer: 0
+  - component: {fileID: 4482033911000563896}
+  m_Layer: 9
   m_Name: Player 1
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1019,7 +1022,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8075784657974059037}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.0106639, z: -0, w: -0.99994314}
+  m_LocalRotation: {x: -0, y: -0.01066351, z: 0, w: -0.99994314}
   m_LocalPosition: {x: -2.36, y: 0.186, z: 6.7672267}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1080,27 +1083,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5797996164620719568
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8075784657974059037}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 128
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.37154484, y: 0.95025927, z: 0.28561258}
-  m_Center: {x: 0.03106141, y: 0.49201497, z: -0.021905184}
 --- !u!114 &345951337920236564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1193,3 +1175,26 @@ MonoBehaviour:
   Uhit: {fileID: 0}
   enemy: {fileID: 0}
   grabbedEnemy: {fileID: 0}
+--- !u!136 &4482033911000563896
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8075784657974059037}
+  m_Material: {fileID: 13400000, guid: a9eecc6d3cc7e144ebe322124b3fbeda, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.11224924
+  m_Height: 1.0327874
+  m_Direction: 1
+  m_Center: {x: 0.043698687, y: 0.48639375, z: -0.14999996}

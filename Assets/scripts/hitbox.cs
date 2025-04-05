@@ -1,10 +1,12 @@
 using UnityEngine;
 using Unity.Collections;
+using System.Collections;
 
 public class hitbox : MonoBehaviour
 {
     public GameObject suicide;
     public GameObject player;
+    public fight playerScript;
     public Animator anim;
     public bool hiti;
     public float VerticalKnockback;
@@ -51,6 +53,7 @@ public class hitbox : MonoBehaviour
     {
         //hurt.enemy.GetHit(h);
         hurt.enemy.Slowdown(h);
+        playerScript.Slowdown();
         anim.speed = 0.6f; // Reduce animation speed (0.2x slower)
         Invoke("RestoreSpeed", 1f); // Restore normal speed after 2 seconds
     }
@@ -61,6 +64,8 @@ public class hitbox : MonoBehaviour
         anim.speed = 0.6f; // Reduce animation speed (0.2x slower)
         Invoke("RestoreSpeed", 1f); // Restore normal speed after 2 seconds
     }
+
+   
 
 
 

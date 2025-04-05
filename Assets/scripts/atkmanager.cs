@@ -14,14 +14,9 @@ public class atkmanager : MonoBehaviour
     public bool cooldown;
     public Flip flipped;
     public bool isBeingHit;
-    public Enemy enemy;
 
 
-    public GameObject Lhitbox;//Light attack hitbox
-    public GameObject Hhitbox;//Heavy attack hitbox
-    public GameObject Chitbox;//Chain attack hitbox
-    public GameObject Shitbox;//Special attack hitbox
-    public GameObject Uhitbox;//Launcher hitbox
+  
 
 
     public void Start()
@@ -48,27 +43,10 @@ public class atkmanager : MonoBehaviour
 
     public void dropping()
     {
-        //                                           ( inside this function)
-        //player.grabbedEnemy.GetThrown(player, playerObject, 2f, 0.5f);
-
-        //                                           ( inside enemy script )
-
-        //gotGrabbed = false;
-
-        //rb.isKinematic = false;
-
-        //rb.useGravity = true;
-
-        // Vector3 directionAwayFromAttacker = (transform.position - playerObject.transform.position);
-
-        // Apply knockback in that direction
-        //Vector3 knockbackDirection = (directionAwayFromAttacker * horizontal_throwforce) + (Vector3.up * vertical_throwforce);
-
-        //Debug.Log($"Applied Knockback: {knockbackDirection}"); // Debugging
-
-        //  rb.linearVelocity = Vector3.zero;
-
-        // rb.linearVelocity = knockbackDirection;
+        //player.grabbedEnemy.GetThrown(player, playerObject, 6f, 2f);
+        player.isGrabbing = false;
+        atk = false;
+   
     }
    
 
@@ -78,41 +56,7 @@ public class atkmanager : MonoBehaviour
 
    }
    
-   void Latk()
-   {
-    if(movement.isGrounded)
-            {
-            movement.rb.linearVelocity = new Vector3(player.K , movement.rb.linearVelocity.y, movement.rb.linearVelocity.z);
-            }
-   }
-
-   void Hatk()
-   {
-     Hhitbox.SetActive(true);
-     if(movement.isGrounded)
-            {
-            movement.rb.linearVelocity = new Vector3(player.K , movement.rb.linearVelocity.y, movement.rb.linearVelocity.z);
-            }
-   }
-
-   void Catk()
-   {
-    Chitbox.SetActive(true);
-    if(movement.isGrounded)
-            {
-            movement.rb.linearVelocity = new Vector3(player.K , movement.rb.linearVelocity.y, movement.rb.linearVelocity.z);
-            }
-   }
-
-   void Satk()
-   {
-    Shitbox.SetActive(true);
-   }
-
-   void Uatk()
-   {
-     Uhitbox.SetActive(true);
-   }
+   
 
     void attaked()
     {

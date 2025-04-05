@@ -123,6 +123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suicide: {fileID: 0}
   player: {fileID: 0}
+  playerScript: {fileID: 0}
   anim: {fileID: 0}
   hiti: 0
   VerticalKnockback: 0
@@ -390,9 +391,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8641601122855747682}
   - component: {fileID: 4660671539843627046}
-  - component: {fileID: 7333640816997442493}
   - component: {fileID: 1093885260405763282}
-  m_Layer: 0
+  - component: {fileID: 7781315040297579888}
+  m_Layer: 9
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -407,7 +408,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2296747311544142842}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.9995641, z: -0, w: -0.029523646}
+  m_LocalRotation: {x: 0, y: 0.999564, z: -0, w: -0.029526522}
   m_LocalPosition: {x: -1.0500001, y: 2.155, z: 6.7672267}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -443,27 +444,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!65 &7333640816997442493
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2296747311544142842}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.36923385, y: 0.99342513, z: 0.32159328}
-  m_Center: {x: 0.043046474, y: 0.49554634, z: 0.0020895004}
 --- !u!114 &1093885260405763282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -510,6 +490,29 @@ MonoBehaviour:
   Uhit: {fileID: 0}
   enemy: {fileID: 0}
   hitBoxObject: {fileID: 0}
+--- !u!136 &7781315040297579888
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2296747311544142842}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.09364734
+  m_Height: 0.97
+  m_Direction: 1
+  m_Center: {x: 0.03, y: 0.45, z: -0.02606693}
 --- !u!1 &6711668910462793204
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,14 +614,14 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.44443166, y: 0.4617406, z: 0.26353073}
-  m_Center: {x: -0.16230989, y: 0.49813503, z: 0.0043182373}
+  m_Size: {x: 0.5056038, y: 0.4617406, z: 0.37835}
+  m_Center: {x: -0.1317239, y: 0.49813503, z: 0.06172774}
 --- !u!114 &9065235653867244993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -755,6 +758,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suicide: {fileID: 0}
   player: {fileID: 0}
+  playerScript: {fileID: 0}
   anim: {fileID: 0}
   hiti: 0
   VerticalKnockback: 0
@@ -885,6 +889,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suicide: {fileID: 0}
   player: {fileID: 0}
+  playerScript: {fileID: 0}
   anim: {fileID: 0}
   hiti: 0
   VerticalKnockback: 0

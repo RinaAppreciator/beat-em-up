@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -58,7 +59,6 @@ public class fight : MonoBehaviour
    public atkmanager enemy;
 
    public Enemy grabbedEnemy;
-
 
 
     public void Start()
@@ -187,13 +187,13 @@ public class fight : MonoBehaviour
         }
 
 
-        if (Input.GetKeyDown(KeyCode.O))
+        if (Input.GetKeyDown(KeyCode.O) && state.atk == false )
         {
             moves.Play("Grab");
            
         }
 
-        if (Input.GetKeyDown(KeyCode.O) && isGrabbing)
+        if (Input.GetKeyDown(KeyCode.O) && isGrabbing && state.atk == false)
         {
             moves.Play("Throw");
         }
@@ -223,7 +223,6 @@ public class fight : MonoBehaviour
 
 
 
-
     }
 
     public void GrabCheck()
@@ -241,10 +240,29 @@ public class fight : MonoBehaviour
 
     }
 
+    public void Slowdown()
+    {
+        Debug.Log("player slowed down!!!!!");
+        moves.speed = 0; // Reduce animation speed (0.2x slower)
+        Debug.Log(moves.speed);
+        rb.useGravity = false;
+        //rb.isKinematic = true;
+        StartCoroutine(RestoreSpeedCoroutine());
+    }
 
-  
-    
-    
+
+    IEnumerator RestoreSpeedCoroutine()
+    {
+        yield return new WaitForSeconds(0.2f);
+        moves.speed = 1f;
+        rb.useGravity = true;
+
+    }
+
+
+
+
+
 
 
 }
