@@ -1006,7 +1006,7 @@ GameObject:
   - component: {fileID: 1431066124101364557}
   - component: {fileID: 1099677105096710197}
   m_Layer: 0
-  m_Name: Player 1
+  m_Name: Player 2
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1242,7 +1242,7 @@ MonoBehaviour:
     m_ActionId: ea5f3fac-85e8-4ebe-9c4e-31dfb3f0cfb6
     m_ActionName: 'Gameplay/Grab[/Keyboard/o,/XInputControllerWindows1/rightShoulder]'
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Player1
+  m_DefaultControlScheme: Player2
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

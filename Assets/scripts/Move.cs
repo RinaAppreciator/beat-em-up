@@ -1,87 +1,88 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Move : MonoBehaviour
 {
-   
-    public float moveSpeed = 5f; 
-    public float jumpForce = 7f; 
+    public float moveSpeed = 5f;
+    public float jumpForce = 7f;
     public Rigidbody rb;
-    private float moveInput;
     public bool isGrounded;
-    public atkmanager state;
-    public bool Player2;
-    float moveX;
-    float moveZ;
     public bool running = false;
+    public int playerID = 1; // 1 para teclado, 2 para controle
 
-
-    public float turnSpeed = 1000f;
     private Vector3 moveDirection;
-    Vector3 m_Movement;
-    Quaternion m_Rotation = Quaternion.identity;
+    private Quaternion m_Rotation = Quaternion.identity;
+    private PlayerControls controls;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private Vector2 inputMovement;
+    private bool jumpPressed = false;
+
+    // Ataques
+    private bool lightHit;
+    private bool upperCut;
+    private bool heavyHit;
+    private bool grab;
+
+    void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        controls = new PlayerControls();
+
+        // Aqui você pode diferenciar os bindings se estiver usando PlayerInput, ou deixar assim para teclado + controle
+        controls.Gameplay.Move.started += ctx => inputMovement = ctx.ReadValue<Vector2>();
+        controls.Gameplay.Move.performed += ctx => inputMovement = ctx.ReadValue<Vector2>();
+        controls.Gameplay.Move.canceled += ctx => inputMovement = Vector2.zero;
+
+        controls.Gameplay.Jump.performed += ctx => jumpPressed = true;
+
+        controls.Gameplay.LightHit.performed += ctx => lightHit = true;
+        controls.Gameplay.UpperCut.performed += ctx => upperCut = true;
+        controls.Gameplay.HeavyHit.performed += ctx => heavyHit = true;
+        controls.Gameplay.Grab.performed += ctx => grab = true;
     }
 
-    // Update is called once per frame
+    void OnEnable() => controls.Gameplay.Enable();
+    void OnDisable() => controls.Gameplay.Disable();
+
+    void Start() => rb = GetComponent<Rigidbody>();
+
     void Update()
     {
         Movement();
         Jump();
-      
+        HandleAttacks();
     }
-
 
     void Movement()
     {
-        moveX = 0f;
-        moveZ = 0f;
-
-        if (Input.GetKey(KeyCode.A)) moveX = -1f;
-        if (Input.GetKey(KeyCode.D)) moveX = 1f;
-        if (Input.GetKey(KeyCode.W)) moveZ = 1f;
-        if (Input.GetKey(KeyCode.S)) moveZ = -1f;
-
-        moveDirection = new Vector3(moveX, 0f, moveZ).normalized;
-
-        //rotation
-
-        //Debug.Log(moveDirection);
+        moveDirection = new Vector3(inputMovement.x, 0f, inputMovement.y).normalized;
 
         if (moveDirection != Vector3.zero)
         {
             m_Rotation = Quaternion.LookRotation(moveDirection);
-     
             running = true;
         }
-
-        if (moveDirection == Vector3.zero )
+        else
         {
             running = false;
         }
-
-
     }
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (jumpPressed && isGrounded)
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
             isGrounded = false;
         }
+
+        jumpPressed = false;
     }
 
     void FixedUpdate()
     {
         rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
-       
         rb.MoveRotation(m_Rotation);
     }
-
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -89,7 +90,32 @@ public class Move : MonoBehaviour
         {
             isGrounded = true;
         }
-
     }
 
+    void HandleAttacks()
+    {
+        if (lightHit)
+        {
+            Debug.Log("Light Hit");
+            lightHit = false;
+        }
+
+        if (upperCut)
+        {
+            Debug.Log("Upper Cut");
+            upperCut = false;
+        }
+
+        if (heavyHit)
+        {
+            Debug.Log("Heavy Hit");
+            heavyHit = false;
+        }
+
+        if (grab)
+        {
+            Debug.Log("Grab");
+            grab = false;
+        }
+    }
 }
