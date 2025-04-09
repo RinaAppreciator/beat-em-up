@@ -128,6 +128,7 @@ MonoBehaviour:
   hiti: 0
   VerticalKnockback: 0
   HorizontalKnockback: 0
+  ForwardKnockback: 0
   layerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -267,12 +268,8 @@ MonoBehaviour:
   cooldown: 0
   flipped: {fileID: 0}
   isBeingHit: 0
-  enemy: {fileID: 0}
-  Lhitbox: {fileID: 0}
-  Hhitbox: {fileID: 0}
-  Chitbox: {fileID: 0}
-  Shitbox: {fileID: 0}
-  Uhitbox: {fileID: 0}
+  canWalk: 0
+  chain: 0
 --- !u!1 &1763187723086693412
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,12 +473,9 @@ MonoBehaviour:
   gotGrabbed: 0
   isBeingHit: 0
   shaking: 0
+  Recovered: 0
+  OnTheGroundHurt: 0
   rb: {fileID: 4660671539843627046}
-  lightK: 0
-  heavyK: 0
-  upK: 0
-  K: 0
-  Kup: 0
   chain: 0
   maxchain: 0
   Lhit: {fileID: 0}
@@ -490,6 +484,9 @@ MonoBehaviour:
   Uhit: {fileID: 0}
   enemy: {fileID: 0}
   hitBoxObject: {fileID: 0}
+  PlayerTransform: {fileID: 6953134104338939273, guid: a94bddc2340d1774c9780189de64f516, type: 3}
+  moveSpeed: 1
+  isAttacking: 0
 --- !u!136 &7781315040297579888
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -635,6 +632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 1093885260405763282}
+  player: {fileID: 0}
 --- !u!1 &6764115595055689756
 GameObject:
   m_ObjectHideFlags: 0
@@ -763,6 +761,7 @@ MonoBehaviour:
   hiti: 0
   VerticalKnockback: 0
   HorizontalKnockback: 0
+  ForwardKnockback: 0
   layerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -894,6 +893,7 @@ MonoBehaviour:
   hiti: 0
   VerticalKnockback: 0
   HorizontalKnockback: 0
+  ForwardKnockback: 0
   layerMask:
     serializedVersion: 2
     m_Bits: 0

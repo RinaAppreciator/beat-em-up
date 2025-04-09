@@ -55,6 +55,10 @@ public class Enemy : MonoBehaviour
     public atkmanager enemy;
     public grabHitbox hitBoxObject;
 
+    public Transform PlayerTransform;
+    public float moveSpeed = 5f;
+    public bool isAttacking = false;
+
     Transform grabParent;
     
 
@@ -207,21 +211,42 @@ public class Enemy : MonoBehaviour
         }
 
 
+        if (gotGrabbed)
+        {
+            rb.MovePosition(Vector3.Lerp(rb.position, hitBoxObject.transform.position, Time.fixedDeltaTime * 5f));
+        }
+        else if (!gotGrabbed && !isAttacking && !gotHit)
+        {
 
-        if (gotGrabbed) {
+            if (PlayerTransform != null)
+            {
+                transform.LookAt(PlayerTransform);
 
-            //m_collider.enabled = false; 
+                Vector3 direction = (PlayerTransform.position - transform.position).normalized;
+                rb.MovePosition(transform.position + direction * moveSpeed * Time.deltaTime);
 
-           rb.MovePosition(Vector3.Lerp(rb.position, hitBoxObject.transform.position, Time.fixedDeltaTime * 15f));
+                float distanceToPlayer = Vector3.Distance(transform.position, PlayerTransform.position);
 
-           
-            //transform.rotation = Quaternion.identity;
-            //rb.MovePosition(hitBoxObject.transform.position);
-        //transform.position = Vector3.Lerp(transform.position, hitBoxObject.transform.position, Time.deltaTime * 10f);
-        }   
+                if (distanceToPlayer <= 0.7f && isGrounded)
+                {
+                    isAttacking = true;
+                    StartCoroutine(Attacking());
+                }
 
-     
+            }
+        }
+}
 
+
+
+    public IEnumerator Attacking()
+    {
+        isAttacking = true;
+
+        moves.Play("Chain1");
+        yield return new WaitForSeconds(2.0f);
+
+        isAttacking = false;
     }
 
 
