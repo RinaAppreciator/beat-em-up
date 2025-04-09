@@ -11,6 +11,7 @@ public class hitbox : MonoBehaviour
     public bool hiti;
     public float VerticalKnockback;
     public float HorizontalKnockback;
+    public float ForwardKnockback;
     public LayerMask layerMask;
 
     public void Start()
@@ -52,7 +53,16 @@ public class hitbox : MonoBehaviour
     protected virtual void OnHit(Hurt hurt, hitbox h)
     {
         //hurt.enemy.GetHit(h);
-        hurt.enemy.Slowdown(h);
+        if (hurt.player != null)
+        {
+            Debug.Log("hitting player");
+
+            hurt.player.GetSlowdown(h);
+        }
+        if (hurt.enemy != null)
+        {
+            hurt.enemy.Slowdown(h);
+        }
         playerScript.Slowdown();
         anim.speed = 0.6f; // Reduce animation speed (0.2x slower)
         Invoke("RestoreSpeed", 1f); // Restore normal speed after 2 seconds

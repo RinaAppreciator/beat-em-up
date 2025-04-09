@@ -1,95 +1,101 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Move : MonoBehaviour
 {
-   
-    public float moveSpeed = 5f; 
-    public float jumpForce = 7f; 
+    public float moveSpeed = 5f;
+    public float jumpForce = 7f;
     public Rigidbody rb;
-    private float moveInput;
     public bool isGrounded;
-    public atkmanager state;
-    public bool Player2;
-    float moveX;
-    float moveZ;
     public bool running = false;
+    public int playerID = 1; // 1 para teclado, 2 para controle
+    public fight player;
 
+    private Vector2 movement;
 
-    public float turnSpeed = 1000f;
     private Vector3 moveDirection;
-    Vector3 m_Movement;
-    Quaternion m_Rotation = Quaternion.identity;
+    private Quaternion m_Rotation = Quaternion.identity;
+    [SerializeField] atkmanager state;
+    [SerializeField] Animator moves;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+    // Ataques
+    private bool lightHit;
+    private bool upperCut;
+    private bool heavyHit;
+    private bool grab;
+
+    
+    void Start() =>
+        
         rb = GetComponent<Rigidbody>();
-    }
 
-    // Update is called once per frame
     void Update()
     {
-        Movement();
-        Jump();
-      
+        //Debug.Log($"can walk:{state.canWalk}");
+        if (player.gotHit == false)
+        {
+            Movement();
+        }
+     
     }
 
 
-    void Movement()
+    public void Movement()
     {
-        moveX = 0f;
-        moveZ = 0f;
-
-        if (Input.GetKey(KeyCode.A)) moveX = -1f;
-        if (Input.GetKey(KeyCode.D)) moveX = 1f;
-        if (Input.GetKey(KeyCode.W)) moveZ = 1f;
-        if (Input.GetKey(KeyCode.S)) moveZ = -1f;
-
-        moveDirection = new Vector3(moveX, 0f, moveZ).normalized;
-
-        //rotation
-
-        //Debug.Log(moveDirection);
-
-        if (moveDirection != Vector3.zero)
+        if (moveDirection != Vector3.zero && state.canWalk )
         {
             m_Rotation = Quaternion.LookRotation(moveDirection);
-     
             running = true;
         }
-
-        if (moveDirection == Vector3.zero )
+        else
         {
             running = false;
         }
 
+    }
+
+
+
+    public void MovementInput(InputAction.CallbackContext context)
+    {
+
+       
+         moveDirection = new Vector3(context.ReadValue<Vector2>().x, 0f, context.ReadValue<Vector2>().y).normalized;
+        
 
     }
 
-    void Jump()
+    public void JumpInput(InputAction.CallbackContext context)
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (context.started && isGrounded && state.canWalk )
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
             isGrounded = false;
+            moves.Play("Jump");
+            running = false;
+            
         }
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
-       
-        rb.MoveRotation(m_Rotation);
-    }
+        if (state.canWalk)
+        {
+            rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
+            rb.MoveRotation(m_Rotation);
 
+        }
+        
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+          
         }
-
     }
 
 }
+

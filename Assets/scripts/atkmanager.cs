@@ -14,6 +14,8 @@ public class atkmanager : MonoBehaviour
     public bool cooldown;
     public Flip flipped;
     public bool isBeingHit;
+    public bool canWalk ;
+    public int chain;
 
 
   
@@ -22,14 +24,23 @@ public class atkmanager : MonoBehaviour
     public void Start()
     {
         moveset = GetComponent<Animator>();
+        canWalk = true;
     }
 
-  
+    public void cantWalk()
+    {
+        //canWalk = false;
+    }
+
+    public void canWalkAgain()
+    {
+       // canWalk = true;
+    }
 
     public void atacking()
     {
         atk = true;
-        followup = true;
+        followup = false;
     }
 
     public void throwing()
@@ -69,9 +80,17 @@ public class atkmanager : MonoBehaviour
         stunned = false;
     }
 
+    void ChainStart()
+    {
+        
+       followup = true;
+        
+    }
+
     void ChainEnd()
     {
         followup =false;
+        player.chain = 0;
     }
 
     void CooldownStart()

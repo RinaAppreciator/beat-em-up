@@ -103,32 +103,38 @@ public class Enemy : MonoBehaviour
 
             moves.SetBool("Hurt", true);
 
-           
-        
-                //moves.Play("Hitted");
-                //gotHit = false;
-
-                Vector3 directionAwayFromAttacker = (transform.position - enemyObject.transform.position).normalized;
-
-                // Apply knockback in that direction
-                Vector3 knockbackDirection = (directionAwayFromAttacker * hitBoxObject.HorizontalKnockback) + (Vector3.up * hitBoxObject.VerticalKnockback);
-
-                Debug.Log($"Applied Knockback: {knockbackDirection}"); // Debugging
-
-               rb.linearVelocity = Vector3.zero;
-
-               rb.linearVelocity = knockbackDirection;
 
 
-                Vector3 normalizedDirection = knockbackDirection.normalized;
+            //moves.Play("Hitted");
+            //gotHit = false;
 
-                moves.SetFloat("HorizontalVelocity", normalizedDirection.x);
-                moves.SetFloat("VerticalVelocity", normalizedDirection.y);
+
+            Vector3 directionAwayFromAttacker = (transform.position - enemyObject.transform.position).normalized;
+
+            // Break it down into local directions relative to THIS character
+            Vector3 localKnockback = transform.InverseTransformDirection(directionAwayFromAttacker);
+
+            Debug.Log($"Applied Knockback: {localKnockback}"); // Debugging
+
+            Vector3 knockback =
+             (transform.right * localKnockback.x * hitBoxObject.HorizontalKnockback) +       // Sideways
+             (transform.forward * localKnockback.z * hitBoxObject.ForwardKnockback) +        // Forward/back
+             (Vector3.up * hitBoxObject.VerticalKnockback);
+
+            rb.linearVelocity = Vector3.zero;
+
+            rb.linearVelocity = knockback;
+
+
+
+               // moves.SetFloat("HorizontalVelocity", normalizedDirection.x);
+                //moves.SetFloat("VerticalVelocity", normalizedDirection.y);
 
                 if (hitBoxObject.HorizontalKnockback <2 && hitBoxObject.VerticalKnockback < 2)
                 {
                     {
                         moves.Play("Hitted");
+                        gotHit = false;
                     }
                 }
 
@@ -300,7 +306,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator RestoreSpeedCoroutine(hitbox collision)
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.2f);
         moves.speed = 1f;
         rb.useGravity = true;
         GetHit(collision);
@@ -308,7 +314,7 @@ public class Enemy : MonoBehaviour
 
     public void Recover()
     {
-        Debug.Log("Recovering");
+        Debug.Log("Enemy is Recovering");
         StartCoroutine(RecoverTimer());
     }
 
@@ -326,6 +332,18 @@ public class Enemy : MonoBehaviour
         OnTheGroundHurt = false;
         moves.SetBool("Recovered", true);
         ResetRecover();
+
+    }
+
+    public void callWaitTimeAttack()
+    {
+        StartCoroutine(WaitAttackTimer());
+    }
+
+    IEnumerator WaitAttackTimer()
+    {
+        yield return new WaitForSeconds(0.5f);
+        moves.SetTrigger("EnemyAttack");
 
     }
 
