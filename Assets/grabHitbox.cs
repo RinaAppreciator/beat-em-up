@@ -6,13 +6,13 @@ public class grabHitbox : MonoBehaviour
     public fight playerObject;
     GameObject enemyObject;
     Enemy enemy;
-    private Animator anim;
+    public Animator anim;
     public bool hiti;
     public LayerMask layerMask;
 
     public void Start()
     {
-        anim = player.GetComponent<Animator>();
+        
     }
 
     public void OnTriggerEnter(Collider collision)
