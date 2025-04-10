@@ -24,7 +24,7 @@ public class ground : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(touchingObjects.Count);
+        //Debug.Log(touchingObjects.Count);
     }
 
     public void screenShake(float amount, float time)
@@ -74,7 +74,7 @@ public class ground : MonoBehaviour
     {
         float verticalSpeed = Mathf.Abs(rb.linearVelocity.y);
 
-        Debug.Log(verticalSpeed);
+        //Debug.Log(verticalSpeed);
 
     
         if (verticalSpeed >= 1)

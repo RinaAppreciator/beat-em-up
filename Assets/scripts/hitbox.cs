@@ -1,19 +1,26 @@
 using UnityEngine;
 using Unity.Collections;
+using System.Collections;
 
 public class hitbox : MonoBehaviour
 {
-    public GameObject suicide;
+   
     public GameObject player;
+    public fight playerScript;
     public Animator anim;
     public bool hiti;
     public float VerticalKnockback;
     public float HorizontalKnockback;
+    public float ForwardKnockback;
+    public float damage;
     public LayerMask layerMask;
+
+    public AudioClip impactHit;
+    public AudioClip soundHit;
 
     public void Start()
     {
-        anim = player.GetComponent<Animator>();
+ 
     }
 
     public void OnTriggerEnter(Collider collision)
@@ -44,15 +51,25 @@ public class hitbox : MonoBehaviour
 
     void RestoreSpeed()
     {
-        anim.speed = 1f;
+       // anim.speed = 1f;
     }
 
     protected virtual void OnHit(Hurt hurt, hitbox h)
     {
         //hurt.enemy.GetHit(h);
-        hurt.enemy.Slowdown(h);
-        anim.speed = 0.6f; // Reduce animation speed (0.2x slower)
-        Invoke("RestoreSpeed", 1f); // Restore normal speed after 2 seconds
+        if (hurt.player != null)
+        {
+            Debug.Log("hitting player");
+
+            hurt.player.GetSlowdown(h, impactHit);
+        }
+        if (hurt.enemy != null)
+        {
+            hurt.enemy.Slowdown(h);
+        }
+        playerScript.Slowdown();
+        //anim.speed = 0.6f; // Reduce animation speed (0.2x slower)
+        //Invoke("RestoreSpeed", 1f); // Restore normal speed after 2 seconds
     }
 
     protected virtual void OnBallHit(ballHurtbox ballhurt, hitbox h)
@@ -61,6 +78,8 @@ public class hitbox : MonoBehaviour
         anim.speed = 0.6f; // Reduce animation speed (0.2x slower)
         Invoke("RestoreSpeed", 1f); // Restore normal speed after 2 seconds
     }
+
+   
 
 
 

@@ -121,15 +121,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 155c7675755e1444f8812af8207707e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  suicide: {fileID: 0}
   player: {fileID: 0}
+  playerScript: {fileID: 0}
   anim: {fileID: 0}
   hiti: 0
   VerticalKnockback: 0
   HorizontalKnockback: 0
+  ForwardKnockback: 0
+  damage: 0
   layerMask:
     serializedVersion: 2
     m_Bits: 0
+  impactHit: {fileID: 0}
+  soundHit: {fileID: 0}
 --- !u!1 &1481633966877079257
 GameObject:
   m_ObjectHideFlags: 0
@@ -142,7 +146,7 @@ GameObject:
   - component: {fileID: 6153869766139654457}
   - component: {fileID: 417704715104614968}
   - component: {fileID: 5668775393001350458}
-  - component: {fileID: 2387528326664686459}
+  - component: {fileID: 6879081494415251349}
   m_Layer: 0
   m_Name: Ryu 2
   m_TagString: Player
@@ -244,7 +248,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2387528326664686459
+--- !u!114 &6879081494415251349
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -261,17 +265,13 @@ MonoBehaviour:
   rb: {fileID: 4660671539843627046}
   movement: {fileID: 0}
   player: {fileID: 0}
-  playerObject: {fileID: 0}
+  playerObject: {fileID: 2296747311544142842}
   followup: 0
   cooldown: 0
   flipped: {fileID: 0}
   isBeingHit: 0
-  enemy: {fileID: 0}
-  Lhitbox: {fileID: 0}
-  Hhitbox: {fileID: 0}
-  Chitbox: {fileID: 0}
-  Shitbox: {fileID: 0}
-  Uhitbox: {fileID: 0}
+  canWalk: 0
+  chain: 0
 --- !u!1 &1763187723086693412
 GameObject:
   m_ObjectHideFlags: 0
@@ -390,9 +390,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8641601122855747682}
   - component: {fileID: 4660671539843627046}
-  - component: {fileID: 7333640816997442493}
   - component: {fileID: 1093885260405763282}
-  m_Layer: 0
+  - component: {fileID: 7781315040297579888}
+  m_Layer: 9
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -407,7 +407,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2296747311544142842}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.9995641, z: -0, w: -0.029523646}
+  m_LocalRotation: {x: 0, y: 0.999564, z: -0, w: -0.029526522}
   m_LocalPosition: {x: -1.0500001, y: 2.155, z: 6.7672267}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -443,8 +443,44 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!65 &7333640816997442493
-BoxCollider:
+--- !u!114 &1093885260405763282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2296747311544142842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a953a41bede8dcf49865de07da26a4c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  suicide: {fileID: 0}
+  otherplayer: {fileID: 0}
+  movement: {fileID: 0}
+  state: {fileID: 6879081494415251349}
+  isGrounded: 0
+  hurtbox: {fileID: 6711668910462793204}
+  moves: {fileID: 5668775393001350458}
+  hp: 0
+  hitvar: 0
+  gotHit: 0
+  gotGrabbed: 0
+  isBeingHit: 0
+  shaking: 0
+  Recovered: 0
+  OnTheGroundHurt: 0
+  isChasing: 0
+  rb: {fileID: 4660671539843627046}
+  chain: 0
+  maxchain: 0
+  enemy: {fileID: 6879081494415251349}
+  hitBoxObject: {fileID: 0}
+  PlayerTransform: {fileID: 6953134104338939273, guid: a94bddc2340d1774c9780189de64f516, type: 3}
+  moveSpeed: 1
+  isAttacking: 0
+--- !u!136 &7781315040297579888
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -461,55 +497,11 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.36923385, y: 0.99342513, z: 0.32159328}
-  m_Center: {x: 0.043046474, y: 0.49554634, z: 0.0020895004}
---- !u!114 &1093885260405763282
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2296747311544142842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a953a41bede8dcf49865de07da26a4c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  suicide: {fileID: 0}
-  otherplayer: {fileID: 0}
-  movement: {fileID: 0}
-  state: {fileID: 2387528326664686459}
-  isGrounded: 0
-  hurtbox: {fileID: 6711668910462793204}
-  moves: {fileID: 5668775393001350458}
-  LAD: 0
-  HAD: 0
-  HAHD: 0
-  CAD: 0
-  SAD: 0
-  UAD: 0
-  UAHD: 0
-  hp: 0
-  hitvar: 0
-  gotHit: 0
-  gotGrabbed: 0
-  isBeingHit: 0
-  shaking: 0
-  rb: {fileID: 4660671539843627046}
-  lightK: 0
-  heavyK: 0
-  upK: 0
-  K: 0
-  Kup: 0
-  chain: 0
-  maxchain: 0
-  Lhit: {fileID: 0}
-  Hhit: {fileID: 0}
-  Shit: {fileID: 0}
-  Uhit: {fileID: 0}
-  enemy: {fileID: 0}
-  hitBoxObject: {fileID: 0}
+  serializedVersion: 2
+  m_Radius: 0.09364734
+  m_Height: 0.97
+  m_Direction: 1
+  m_Center: {x: 0.03, y: 0.45, z: -0.02606693}
 --- !u!1 &6711668910462793204
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,14 +603,14 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.44443166, y: 0.4617406, z: 0.26353073}
-  m_Center: {x: -0.16230989, y: 0.49813503, z: 0.0043182373}
+  m_Size: {x: 0.5056038, y: 0.4617406, z: 0.37835}
+  m_Center: {x: -0.1317239, y: 0.49813503, z: 0.06172774}
 --- !u!114 &9065235653867244993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -632,6 +624,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 1093885260405763282}
+  player: {fileID: 0}
 --- !u!1 &6764115595055689756
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,15 +746,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 155c7675755e1444f8812af8207707e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  suicide: {fileID: 0}
   player: {fileID: 0}
+  playerScript: {fileID: 0}
   anim: {fileID: 0}
   hiti: 0
   VerticalKnockback: 0
   HorizontalKnockback: 0
+  ForwardKnockback: 0
+  damage: 0
   layerMask:
     serializedVersion: 2
     m_Bits: 0
+  impactHit: {fileID: 0}
+  soundHit: {fileID: 0}
 --- !u!1 &8912871053401950587
 GameObject:
   m_ObjectHideFlags: 0
@@ -883,12 +880,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 155c7675755e1444f8812af8207707e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  suicide: {fileID: 0}
   player: {fileID: 0}
+  playerScript: {fileID: 0}
   anim: {fileID: 0}
   hiti: 0
   VerticalKnockback: 0
   HorizontalKnockback: 0
+  ForwardKnockback: 0
+  damage: 0
   layerMask:
     serializedVersion: 2
     m_Bits: 0
+  impactHit: {fileID: 0}
+  soundHit: {fileID: 0}

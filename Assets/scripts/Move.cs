@@ -1,95 +1,124 @@
+using NUnit.Framework.Internal;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using static Move;
 
 public class Move : MonoBehaviour
 {
-   
-    public float moveSpeed = 5f; 
-    public float jumpForce = 7f; 
+    public float moveSpeed = 5f;
+    public float jumpForce = 7f;
     public Rigidbody rb;
-    private float moveInput;
     public bool isGrounded;
-    public atkmanager state;
-    public bool Player2;
-    float moveX;
-    float moveZ;
     public bool running = false;
+    public fight player;
 
+    public Mesh MagicGirl;
+    public Mesh Soldier;
+    public SkinnedMeshRenderer bodyMesh;
+    public Material[] MagicGirlMat;
+    public Material[] SoldierMat;
+    public Transform playerBody;
+    public Transform shadow;
+    public float playerID;
 
-    public float turnSpeed = 1000f;
+    private Vector2 movement;
+
     private Vector3 moveDirection;
-    Vector3 m_Movement;
-    Quaternion m_Rotation = Quaternion.identity;
+    private Quaternion m_Rotation = Quaternion.identity;
+    [SerializeField] atkmanager state;
+    [SerializeField] Animator moves;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Ataques
+    private bool lightHit;
+    private bool upperCut;
+    private bool heavyHit;
+    private bool grab;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        playerID = PlayerManager.Instance.players.IndexOf(transform);
+
+        switch (playerID)
+        {
+            case 0:
+                bodyMesh.sharedMesh = MagicGirl;
+                bodyMesh.materials = MagicGirlMat;
+                break;
+            case 1:
+                bodyMesh.sharedMesh = Soldier;
+                bodyMesh.materials = SoldierMat;
+                break;
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        Movement();
-        Jump();
-      
-    }
-
-
-    void Movement()
-    {
-        moveX = 0f;
-        moveZ = 0f;
-
-        if (Input.GetKey(KeyCode.A)) moveX = -1f;
-        if (Input.GetKey(KeyCode.D)) moveX = 1f;
-        if (Input.GetKey(KeyCode.W)) moveZ = 1f;
-        if (Input.GetKey(KeyCode.S)) moveZ = -1f;
-
-        moveDirection = new Vector3(moveX, 0f, moveZ).normalized;
-
-        //rotation
-
-        //Debug.Log(moveDirection);
-
-        if (moveDirection != Vector3.zero)
+        if (shadow.position.y != 0.25f)
         {
-            m_Rotation = Quaternion.LookRotation(moveDirection);
-     
-            running = true;
+            Vector3 pos = shadow.position;
+            pos.y = 0.25f;
+            shadow.position = pos;
         }
 
-        if (moveDirection == Vector3.zero )
+        Movement();
+    }
+
+    public void Movement()
+    {
+        if (moveDirection != Vector3.zero && state.canWalk )
+        {
+            playerBody.rotation = Quaternion.Slerp(playerBody.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * 10f);
+            running = true;
+        }
+        else
         {
             running = false;
         }
 
+    }
+
+    public void MovementInput(InputAction.CallbackContext context)
+    {
+
+       
+         moveDirection = new Vector3(context.ReadValue<Vector2>().x, 0f, context.ReadValue<Vector2>().y).normalized;
+        
 
     }
 
-    void Jump()
+    public void JumpInput(InputAction.CallbackContext context)
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (context.started && isGrounded && state.canWalk )
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
             isGrounded = false;
+            moves.Play("Jump");
+            running = false;
+            
         }
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
-       
-        rb.MoveRotation(m_Rotation);
-    }
+        if (!state.atk && !player.gotHit)
+        {
+            rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
+            rb.MoveRotation(m_Rotation);
 
+        }
+        
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+          
         }
-
     }
 
 }
+
