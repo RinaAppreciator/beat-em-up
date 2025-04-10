@@ -25,17 +25,17 @@ public class fight : MonoBehaviour
 
     // Health
     public float hp;  // hitpoints
+    public float maxHP = 150;
     private float damage;  // the damage applied
     public float hitvar;
     public bool gotHit;
+    public int score;
 
     // Knockbacks
     public Rigidbody rb;  // rigidbody that moves player
 
     public float chain;
     public bool maxchain;
-
-    public int score;
 
     public bool OnTheGroundHurt;
     public bool recovered;
@@ -53,7 +53,7 @@ public class fight : MonoBehaviour
 
     public void Start()
     {
-        PlayerManager.Instance.RegisterPlayer(transform);
+        hp = maxHP;
         gotHit = false;
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
@@ -65,11 +65,18 @@ public class fight : MonoBehaviour
 
     public void Update()
     {
+        PlayerManager.Instance.RegisterPlayer(transform);
+
+        if (transform.position.y < -10.0f)
+        {
+            hp = 0;
+        }
+
         if (hp <= 0)
         {
-            suicide.SetActive(false);
             moves.SetBool("Alive", false);
-            Debug.Log("Died");
+            PlayerManager.Instance.UnregisterPlayer(transform);
+            Destroy(gameObject);
         }
         
         // Corrida (animação)
@@ -282,7 +289,7 @@ public class fight : MonoBehaviour
     }
 
 
-    public void GetSlowdown(hitbox collision, AudioClip hitSound)
+    public void GetSlowdown(hitbox collision, AudioClip hitSound, float damage)
     {
         Debug.Log("slowed down!!!!!");
         moves.speed = 0; // Reduce animation speed (0.2x slower)
@@ -290,6 +297,7 @@ public class fight : MonoBehaviour
         rb.useGravity = false;
         gotHit = true;
         PlaySound(hitSound);
+        hp -= damage;
         //rb.isKinematic = true;
         StartCoroutine(ShakeRoutine(2, collision));
         //StartCoroutine(RestoreSpeedCoroutine(collision));

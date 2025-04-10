@@ -19,22 +19,24 @@ public class UIManager : MonoBehaviour
     }
     void Update()
     {
+        ChangeHealth();
+        ChangeScore();
+
+        Debug.Log(healthBar.fillAmount);
+    }
+
+    public void ChangeHealth()
+    {
+        
+        healthBar.fillAmount = player.hp / player.maxHP;
         
     }
 
-    public void ChangeHealth(float damage)
+    public void ChangeScore()
     {
-        if (damage < 0)
-        {
-            healthBar.fillAmount = player.hp / 100f ;
-        }
-    }
 
-    public void ChangeScore(float score)
-    {
-      
         scoreText.text = player.score.ToString();
-        
+
     }
 
 }

@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 4660671539843627046}
   - component: {fileID: 1093885260405763282}
   - component: {fileID: 7781315040297579888}
-  - component: {fileID: 6178253811899926554}
+  - component: {fileID: 5599749607564364142}
   m_Layer: 9
   m_Name: Enemy
   m_TagString: Enemy
@@ -462,6 +462,7 @@ MonoBehaviour:
   state: {fileID: 6879081494415251349}
   isGrounded: 0
   hurtbox: {fileID: 6711668910462793204}
+  audioSource: {fileID: 5599749607564364142}
   moves: {fileID: 5668775393001350458}
   hp: 0
   hitvar: 0
@@ -503,7 +504,7 @@ CapsuleCollider:
   m_Height: 0.97
   m_Direction: 1
   m_Center: {x: 0.03, y: 0.45, z: -0.02606693}
---- !u!82 &6178253811899926554
+--- !u!82 &5599749607564364142
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

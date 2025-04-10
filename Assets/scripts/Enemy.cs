@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     public bool isGrounded;
     public GameObject hurtbox;
     Rigidbody GrabRb;
+    public AudioSource audioSource;
 
 
     //Animations
@@ -38,8 +39,6 @@ public class Enemy : MonoBehaviour
 
     public atkmanager enemy;
     public grabHitbox hitBoxObject;
-
-    public AudioSource audioSource;
 
     public Transform PlayerTransform;
     public float moveSpeed = 5f;
@@ -129,8 +128,6 @@ public class Enemy : MonoBehaviour
                     }
                 }
 
-            
-
 
         }
 
@@ -178,11 +175,7 @@ public class Enemy : MonoBehaviour
             //Physics.IgnoreLayerCollision(0,8);
 
             //Physics.IgnoreCollision(GetComponent<Collider>(), hitbox.GetComponent<Collider>(), true);
-
-
-
         }
-
     }
 
 
@@ -227,7 +220,7 @@ public class Enemy : MonoBehaviour
 
             }
         }
-}
+    }
 
 
     private Transform GetClosestPlayer()
@@ -261,6 +254,11 @@ public class Enemy : MonoBehaviour
         isAttacking = false;
     }
 
+    IEnumerator DestroyItselfTimer()
+    {
+        yield return new WaitForSeconds(2f);
+        Destroy(gameObject);
+    }
 
     public void GetThrown(fight player, GameObject playerObject, float horizontal_throwforce, float vertical_throwforce) 
     {
@@ -326,13 +324,15 @@ public class Enemy : MonoBehaviour
 
     }
 
-    public void Slowdown(hitbox collision, AudioClip impactAudio, float damage)
+    public void Slowdown(hitbox collision, AudioClip impactHit, float damage)
     {
         Debug.Log("slowed down!!!!!");
         moves.speed = 0; // Reduce animation speed (0.2x slower)
         Debug.Log(moves.speed);
         rb.useGravity = false;
         hp -= damage;
+        PlaySound(impactHit);
+
         //rb.isKinematic = true;
         StartCoroutine(ShakeRoutine(2, collision));
         //StartCoroutine(RestoreSpeedCoroutine(collision));
@@ -418,17 +418,16 @@ public class Enemy : MonoBehaviour
         StartCoroutine(RestoreSpeedCoroutine(collision));
     }
 
-    IEnumerator DestroyItselfTimer()
+    public void PlaySound(AudioClip sound)
     {
-        yield return new WaitForSeconds(2f);
-        Destroy(gameObject);
+        if (audioSource != null && sound != null)
+        {
+            audioSource.PlayOneShot(sound);
+        }
     }
 
 
-    public void PlaySound(AudioClip clip)
-    {
-        audioSource.PlayOneShot(clip);
-    }
+
 
 
 

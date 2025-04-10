@@ -61,7 +61,7 @@ public class hitbox : MonoBehaviour
         {
             Debug.Log("hitting player");
 
-            hurt.player.GetSlowdown(h, impactHit);
+            hurt.player.GetSlowdown(h, impactHit, damage);
         }
         if (hurt.enemy != null)
         {
