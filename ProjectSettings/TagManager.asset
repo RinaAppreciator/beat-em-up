@@ -17,8 +17,8 @@ TagManager:
   - TopPlayer
   - BottomPlayer
   - GrabbedObject
-  - 
-  - 
+  - CharacterLayer
+  - Ground
   - 
   - 
   - 
