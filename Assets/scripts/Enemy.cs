@@ -39,6 +39,8 @@ public class Enemy : MonoBehaviour
     public atkmanager enemy;
     public grabHitbox hitBoxObject;
 
+    public AudioSource audioSource;
+
     public Transform PlayerTransform;
     public float moveSpeed = 5f;
     public bool isAttacking = false;
@@ -56,7 +58,7 @@ public class Enemy : MonoBehaviour
 
     public void Start()
     {
-        hp = 10;
+        hp = 80;
         //moves.SetBool("Alive", true);
         moves.SetBool("Hurt", false);
        
@@ -189,6 +191,7 @@ public class Enemy : MonoBehaviour
         if (hp <= 0)
         {
             moves.SetBool("Alive", false);
+            StartCoroutine(DestroyItselfTimer());
 
             if (hp > 0)  {
                 moves.SetBool("Alive", true);
@@ -323,12 +326,13 @@ public class Enemy : MonoBehaviour
 
     }
 
-    public void Slowdown(hitbox collision)
+    public void Slowdown(hitbox collision, AudioClip impactAudio, float damage)
     {
         Debug.Log("slowed down!!!!!");
         moves.speed = 0; // Reduce animation speed (0.2x slower)
         Debug.Log(moves.speed);
         rb.useGravity = false;
+        hp -= damage;
         //rb.isKinematic = true;
         StartCoroutine(ShakeRoutine(2, collision));
         //StartCoroutine(RestoreSpeedCoroutine(collision));
@@ -414,8 +418,17 @@ public class Enemy : MonoBehaviour
         StartCoroutine(RestoreSpeedCoroutine(collision));
     }
 
+    IEnumerator DestroyItselfTimer()
+    {
+        yield return new WaitForSeconds(2f);
+        Destroy(gameObject);
+    }
 
 
+    public void PlaySound(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
+    }
 
 
 

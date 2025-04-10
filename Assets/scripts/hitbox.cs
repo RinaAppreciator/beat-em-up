@@ -65,7 +65,7 @@ public class hitbox : MonoBehaviour
         }
         if (hurt.enemy != null)
         {
-            hurt.enemy.Slowdown(h);
+            hurt.enemy.Slowdown(h, impactHit, damage);
         }
         playerScript.Slowdown();
         //anim.speed = 0.6f; // Reduce animation speed (0.2x slower)

@@ -35,6 +35,8 @@ public class fight : MonoBehaviour
     public float chain;
     public bool maxchain;
 
+    public int score;
+
     public bool OnTheGroundHurt;
     public bool recovered;
    
