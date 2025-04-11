@@ -62,12 +62,13 @@ public class Move : MonoBehaviour
             shadow.position = pos;
         }
 
+
         Movement();
     }
 
     public void Movement()
     {
-        if (moveDirection != Vector3.zero && state.canWalk )
+        if (moveDirection != Vector3.zero  )
         {
             playerBody.rotation = Quaternion.Slerp(playerBody.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * 10f);
             running = true;
@@ -81,16 +82,21 @@ public class Move : MonoBehaviour
 
     public void MovementInput(InputAction.CallbackContext context)
     {
+ 
 
-       
-         moveDirection = new Vector3(context.ReadValue<Vector2>().x, 0f, context.ReadValue<Vector2>().y).normalized;
+        moveDirection = new Vector3(context.ReadValue<Vector2>().x, 0f, context.ReadValue<Vector2>().y).normalized;
         
 
     }
 
     public void JumpInput(InputAction.CallbackContext context)
     {
-        if (context.started && isGrounded && state.canWalk )
+        if (state.canWalk == false)
+        {
+            return;
+        }
+
+        if (context.started && isGrounded)
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
             isGrounded = false;
@@ -102,13 +108,21 @@ public class Move : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!state.atk && !player.gotHit)
-        {
-            rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
-            rb.MoveRotation(m_Rotation);
+        Vector3 currentVelocity = rb.linearVelocity;
 
+        // Only apply input-based movement if canWalk is true
+        if (state.canWalk && !state.atk && !player.gotHit)
+        {
+            Vector3 inputVelocity = new Vector3(moveDirection.x * moveSpeed, currentVelocity.y, moveDirection.z * moveSpeed);
+            rb.linearVelocity = inputVelocity;
+            rb.MoveRotation(m_Rotation);
         }
-        
+        else
+        {
+            // Keep Y velocity and external forces like knockback
+            rb.linearVelocity = new Vector3(currentVelocity.x, currentVelocity.y, currentVelocity.z);
+        }
+
     }
 
     private void OnCollisionEnter(Collision collision)

@@ -14,7 +14,7 @@ public class atkmanager : MonoBehaviour
     public bool cooldown;
     public Flip flipped;
     public bool isBeingHit;
-    public bool canWalk ;
+    public bool canWalk = true;
     public int chain;
 
 
@@ -29,12 +29,12 @@ public class atkmanager : MonoBehaviour
 
     public void cantWalk()
     {
-        //canWalk = false;
+        canWalk = false;
     }
 
     public void canWalkAgain()
     {
-       // canWalk = true;
+        canWalk = true;
     }
 
     public void atacking()

@@ -25,17 +25,17 @@ public class fight : MonoBehaviour
 
     // Health
     public float hp;  // hitpoints
+    public float maxHP = 150;
     private float damage;  // the damage applied
     public float hitvar;
     public bool gotHit;
+    public int score;
 
     // Knockbacks
     public Rigidbody rb;  // rigidbody that moves player
 
     public float chain;
     public bool maxchain;
-
-    public int score;
 
     public bool OnTheGroundHurt;
     public bool recovered;
@@ -53,7 +53,7 @@ public class fight : MonoBehaviour
 
     public void Start()
     {
-        PlayerManager.Instance.RegisterPlayer(transform);
+        hp = maxHP;
         gotHit = false;
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
@@ -65,11 +65,18 @@ public class fight : MonoBehaviour
 
     public void Update()
     {
+        PlayerManager.Instance.RegisterPlayer(transform);
+
+        if (transform.position.y < -10.0f)
+        {
+            hp = 0;
+        }
+
         if (hp <= 0)
         {
-            suicide.SetActive(false);
             moves.SetBool("Alive", false);
-            Debug.Log("Died");
+            PlayerManager.Instance.UnregisterPlayer(transform);
+            StartCoroutine(WaitForDeath());
         }
         
         // Corrida (animação)
@@ -96,6 +103,12 @@ public class fight : MonoBehaviour
             StartCoroutine(chainResetTimer());
         }
 
+        if(state.canWalk == false)
+        {
+            StartCoroutine(hitRecover());
+        }
+
+
         
         GrabCheck();
     }
@@ -112,6 +125,7 @@ public class fight : MonoBehaviour
         moves.SetFloat("HorizontalVelocity", x);
         moves.SetFloat("VerticalVelocity", y);       // For jump/fall
         moves.SetFloat("ForwardVelocity", z);
+
     }
 
     public void GrabCheck()
@@ -168,13 +182,13 @@ public class fight : MonoBehaviour
 
         if (context.started && state.atk == false && chain == 1 && state.followup && !isGrabbing)
         {
-            moves.Play("Heavy2");
+            moves.Play("Heavy3");
             chain += 1;
         }
 
         if (context.started && state.atk == false && chain == 2 && state.followup && !isGrabbing)
         {
-            moves.Play("Heavy3");
+            moves.Play("Heavy2");
             chain = 0;
         }
     }
@@ -228,7 +242,6 @@ public class fight : MonoBehaviour
         {
             if (gotHit == true)
             {
-                Debug.Log("crashed into the ground");
                 moves.SetBool("Hurt", false);
                 OnTheGroundHurt = true;
                 Recover();
@@ -241,7 +254,6 @@ public class fight : MonoBehaviour
     public void Recover()
     {
   
-        Debug.Log("Recovering");
         StartCoroutine(RecoverTimer());
     
     }   
@@ -251,7 +263,9 @@ public class fight : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         gotHit = false;
+        OnTheGroundHurt = false;
         moves.SetBool("Recovered", true);
+        StartCoroutine(ResetRecover());
     }
 
 
@@ -266,9 +280,7 @@ public class fight : MonoBehaviour
 
     public void Slowdown()
     {
-        Debug.Log("player slowed down!!!!!");
         moves.speed = 0; // Reduce animation speed (0.2x slower)
-        Debug.Log(moves.speed);
         rb.useGravity = false;
         StartCoroutine(RestoreSpeedCoroutine());
     }
@@ -282,27 +294,47 @@ public class fight : MonoBehaviour
     }
 
 
-    public void GetSlowdown(hitbox collision, AudioClip hitSound)
+    public void GetSlowdown(hitbox collision, AudioClip hitSound, float damage)
     {
-        Debug.Log("slowed down!!!!!");
+
         moves.speed = 0; // Reduce animation speed (0.2x slower)
-        Debug.Log(moves.speed);
         rb.useGravity = false;
         gotHit = true;
         PlaySound(hitSound);
-        //rb.isKinematic = true;
+        hp -= damage;
+   
         StartCoroutine(ShakeRoutine(2, collision));
-        //StartCoroutine(RestoreSpeedCoroutine(collision));
+     
 
     }
 
 
     IEnumerator RestoreSpeedCoroutine(hitbox collision)
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.2f);
         moves.speed = 1f;
         rb.useGravity = true;
         GetHit(collision);
+    }
+
+    IEnumerator ResetRecover()
+    {
+        Debug.Log("recovery reset");
+        yield return new WaitForSeconds(0.1f);
+        moves.SetBool("Recovered", false);
+        recovered = false;
+    }
+
+    IEnumerator WaitForDeath()
+    {
+        yield return new WaitForSeconds(1f);
+        Destroy(gameObject);
+    }
+
+    IEnumerator hitRecover()
+    {
+        yield return new WaitForSeconds(0.5f);
+        state.canWalk = true;
     }
 
 
@@ -384,7 +416,8 @@ public class fight : MonoBehaviour
             if (hitBoxObject.HorizontalKnockback < 2 && hitBoxObject.VerticalKnockback < 2)
             {
                 {
-                    moves.Play("Hitted");
+                    moves.Play("Hurt");
+                    gotHit = false;
                 }
             }
 
