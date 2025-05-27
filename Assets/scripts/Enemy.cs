@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public GameObject suicide;
     public fight otherplayer;
     public Move movement;
     public atkmanager state;
@@ -24,15 +23,23 @@ public class Enemy : MonoBehaviour
     private float damage;//the damage applied
     public float hitvar;
     public bool gotHit;
+    public bool justgotHit;
     public bool gotGrabbed;
     public bool isBeingHit;
     public bool shaking;
     public bool Recovered;
     public bool OnTheGroundHurt;
     public bool isChasing;
+    public bool isAlive;
+
+    public bool wasGroundedLastFrame = true;
+    RaycastHit hit;
+
+    bool hasShook = false;
 
     //knockbacks
     public Rigidbody rb;//rigidbody that moves player
+
 
     public float chain;
     public bool maxchain;
@@ -51,20 +58,68 @@ public class Enemy : MonoBehaviour
 
     public GameObject explosion;
 
-    public MeshFilter skin;
-    public Mesh[] skinOptions;
-    public Material[] materialOptions;
-    private int enemySkin;
+    public GameObject hitParticlePrefab;
+    public GameObject ExplosionParticlePrefab;
+
+
+    public float groundCheckDistance = 1f; // Slightly more than your desired "early detect" buffer
+    public LayerMask groundLayer;
+
+
+
+
+    //issues : he's attacking after being hurt in the ground, when he should have a similar recovery time to when he gets thrown in the air
+    // second issue : after he gets knocked back through getUP, he tries to get too close to the player and can't attack him. Idea : while other throws 
+    // throw him in a very long distance, get up is too small and something bad happens
+    // third : he can still move while attacking, which is similar to the first issue
+
 
     Transform grabParent;
 
     public void FixedUpdate()
     {
-        if (gotHit && Recovered == false)
+
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, out hit, groundCheckDistance, groundLayer);
+        
+
+        //if (gotHit && Recovered == false)
+        //{
+        //    //rb.linearVelocity = Vector3.zero;
+        //    //PlayerTransform = null;
+        //}
+
+        if (isGrounded && wasGroundedLastFrame == false && gotHit)
         {
-            //rb.linearVelocity = Vector3.zero;
-            //PlayerTransform = null;
+
+            Debug.Log("crashed into the ground");
+
+            ground groundScript = hit.collider.GetComponent<ground>();
+
+            if (groundScript != null)
+            {
+                if (!hasShook)
+                {
+                    if (rb.linearVelocity.y < -3f) // check for significant impact
+                    {
+                        Debug.Log("Crashing hard into the ground from raycast");
+                        groundScript.shakeGround(4, 0.5f, 4);
+                        hasShook = true;
+                        StartCoroutine(GroundShakeReset());
+
+                    }
+
+                }
+            }
+
+            moves.SetBool("Hurt", false);
+            OnTheGroundHurt = true;
+            Recover();
         }
+
+        wasGroundedLastFrame = isGrounded;
+
+
+
     }
 
     public void Start()
@@ -72,7 +127,9 @@ public class Enemy : MonoBehaviour
         hp = 80;
         //moves.SetBool("Alive", true);
         moves.SetBool("Hurt", false);
-       
+        isAlive = true;
+
+        justgotHit = false;
         gotHit = false;
 
         rb = GetComponent<Rigidbody>();
@@ -80,9 +137,6 @@ public class Enemy : MonoBehaviour
         Physics.IgnoreLayerCollision(9, 8);
         //Physics.IgnoreLayerCollision(0, 4);
 
-        enemySkin = Random.Range(0, 5);
-
-        skin.mesh = skinOptions[enemySkin];
     }
 
     public void GetHit(hitbox collision)
@@ -107,6 +161,7 @@ public class Enemy : MonoBehaviour
 
 
         gotHit = true;
+        justgotHit = false;
 
         if (gotHit == true ) {
 
@@ -134,13 +189,24 @@ public class Enemy : MonoBehaviour
                // moves.SetFloat("HorizontalVelocity", normalizedDirection.x);
                 //moves.SetFloat("VerticalVelocity", normalizedDirection.y);
 
-                if (hitBoxObject.HorizontalKnockback <2 && hitBoxObject.VerticalKnockback < 2)
+                if (hitBoxObject.VerticalKnockback <= 2 && hitBoxObject.VerticalKnockback >= 0)
                 {
                     {
-                        moves.Play("Hitted");
-                        gotHit = false;
+                        //moves.Play("Hitted2");
+                        moves.SetTrigger("GotHurt");
+                        Recover();
                     }
                 }
+
+            if (hitBoxObject.VerticalKnockback < 0 )
+            {
+                {
+                    
+                    Recover();
+                }
+            }
+
+
 
 
         }
@@ -194,11 +260,10 @@ public class Enemy : MonoBehaviour
 
     public void Update()
     {
-        if (hp <= 0)
+        if (hp <= 0 && isAlive == true)
         {
             moves.SetBool("Alive", false);
-          
-            
+            isAlive = false;
             StartCoroutine(DestroyItselfTimer());
 
             if (hp > 0)  {
@@ -206,61 +271,79 @@ public class Enemy : MonoBehaviour
             }
         }
 
-
-        if (gotGrabbed)
+        if (isGrounded)
         {
-            rb.MovePosition(Vector3.Lerp(rb.position, hitBoxObject.transform.position, Time.fixedDeltaTime * 5f));
+            moves.SetBool("OnAir", false);
+         
         }
-        else if (!gotGrabbed && !isAttacking && !gotHit && !OnTheGroundHurt )
+
+
+        if (!isGrounded)
+        {
+            moves.SetBool("OnAir", true);
+        }
+
+
+        //if (gotGrabbed)
+        //{
+        //    rb.MovePosition(Vector3.Lerp(rb.position, hitBoxObject.transform.position, Time.fixedDeltaTime * 5f));
+        //}
+
+        Transform closestPlayer = PlayerTransform;
+
+        float distanceToPlayer = Vector3.Distance(transform.position, closestPlayer.position);
+
+
+
+        if (!gotGrabbed && !isAttacking && !OnTheGroundHurt && distanceToPlayer <= 5f )
         {
 
-            Transform closestPlayer = GetClosestPlayer();
-
-            if (PlayerTransform != null)
+         
+            if (PlayerTransform != null && gotHit == false && justgotHit == false )
             {
+
                 transform.LookAt(closestPlayer);
 
                 Vector3 direction = (closestPlayer.position - transform.position).normalized;
                 rb.MovePosition(transform.position + direction * moveSpeed * Time.deltaTime);
 
 
-                float distanceToPlayer = Vector3.Distance(transform.position, closestPlayer.position);
-
-
-                if (distanceToPlayer <= 0.7f && isGrounded)
+             
+                if (distanceToPlayer <= 0.7f )
                 {
                     isAttacking = true;
                     StartCoroutine(Attacking());
                 }
-
             }
         }
     }
 
 
-    private Transform GetClosestPlayer()
-    {
-        List<Transform> players = PlayerManager.Instance.GetPlayers();
+    //private Transform GetClosestPlayer()
+    //{
+    //    List<Transform> players = PlayerManager.Instance.GetPlayers();
 
-        Transform closest = null;
-        float minDistance = Mathf.Infinity;
+    //    Transform closest = null;
+    //    float minDistance = Mathf.Infinity;
 
-        foreach (Transform player in players)
-        {
-            if (player == null) continue;
+    //    foreach (Transform player in players)
+    //    {
+    //        if (player == null) continue;
 
-            float distance = Vector3.Distance(transform.position, player.position);
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closest = player;
-            }
-        }
-        return closest;
-    }
+    //        float distance = Vector3.Distance(transform.position, player.position);
+    //        if (distance < minDistance)
+    //        {
+    //            minDistance = distance;
+    //            closest = player;
+    //        }
+    //    }
+    //    return closest;
+    //}
 
     public IEnumerator Attacking()
     {
+       
+
         isAttacking = true;
 
         moves.Play("Chain1");
@@ -271,6 +354,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator DestroyItselfTimer()
     {
+
         explosion.SetActive(true);
         PlaySound(explosionSound);
         yield return new WaitForSeconds(2f);
@@ -313,47 +397,64 @@ public class Enemy : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-            moves.SetBool("OnAir", false);
-            if (gotHit == true)
-            {
-                Debug.Log("crashed into the ground");
-                moves.SetBool("Hurt", false);
-                OnTheGroundHurt = true;
-                Recover();
-            }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Ground"))
+    //    {
+    //        isGrounded = true;
+    //        moves.SetBool("OnAir", false);
+    //        if (gotHit == true)
+    //        {
+    //            ground Ground = collision.gameObject.GetComponent<ground>();
+
+    //            if (Ground != null && !hasShook)
+    //            {
+    //                if (rb.linearVelocity.y > 3)
+    //                {
+    //                    Debug.Log("crashed with great speed");
+    //                    rb.AddForce(0, 4, 4);
+    //                }
+
+    //                Ground.shakeGround(4, 0.5f, 4);
+    //                hasShook = true;
+    //                StartCoroutine(GroundShakeReset());
+    //            }
+
+
+    //            Debug.Log("crashed into the ground");
+    //            moves.SetBool("Hurt", false);
+    //            OnTheGroundHurt = true;
+    //            Recover();
+    //        }
             
-        }
+    //    }
 
-    }
+    //}
 
 
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-            moves.SetBool("OnAir", true);
-        }
+    //private void OnCollisionExit(Collision collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Ground"))
+    //    {
+    //        isGrounded = false;
+    //        moves.SetBool("OnAir", true);
+    //    }
 
-    }
+    //}
 
     public void Slowdown(hitbox collision, AudioClip impactHit, float damage)
     {
+        
         Debug.Log("slowed down!!!!!");
+        justgotHit = true;
         moves.speed = 0; // Reduce animation speed (0.2x slower)
-        Debug.Log(moves.speed);
         rb.useGravity = false;
         hp -= damage;
         PlaySound(impactHit);
-
-        //rb.isKinematic = true;
+        GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
+        GameObject ExplosionParticle = Instantiate(ExplosionParticlePrefab, transform.position, Quaternion.identity);
         StartCoroutine(ShakeRoutine(2, collision));
-        //StartCoroutine(RestoreSpeedCoroutine(collision));
+        
 
     }
 
@@ -362,10 +463,13 @@ public class Enemy : MonoBehaviour
 
     IEnumerator RestoreSpeedCoroutine(hitbox collision)
     {
-        yield return new WaitForSeconds(0.2f);
-        moves.speed = 1f;
-        rb.useGravity = true;
-        GetHit(collision);
+   
+        
+            yield return new WaitForSeconds(0.3f);
+            moves.speed = 1f;
+            rb.useGravity = true;
+            GetHit(collision);
+        
     }
 
     public void Recover()
@@ -376,13 +480,13 @@ public class Enemy : MonoBehaviour
 
     public void ResetRecover()
     {
-        Debug.Log("Recovering");
+        Debug.Log("Enemy has recovered");
         StartCoroutine(ResetRecoverTimer());
     }
 
     IEnumerator RecoverTimer()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         Debug.Log("Recovered");
         Recovered = true;
         OnTheGroundHurt = false;
@@ -392,17 +496,13 @@ public class Enemy : MonoBehaviour
 
     }
 
-    public void callWaitTimeAttack()
+    IEnumerator GroundShakeReset()
     {
-        StartCoroutine(WaitAttackTimer());
+        yield return new WaitForSeconds(2f);
+        hasShook = false;
     }
 
-    IEnumerator WaitAttackTimer()
-    {
-        yield return new WaitForSeconds(0.5f);
-        moves.SetTrigger("EnemyAttack");
-
-    }
+   
 
     IEnumerator ResetRecoverTimer()
     {
@@ -416,6 +516,7 @@ public class Enemy : MonoBehaviour
         shaking = true;
         Vector3 originalPosition = rb.position;
         float shakeSpeed = 0.03f; // Adjust for how fast the shake happens
+
 
         for (int i = 0; i < shakeCount; i++)
         {

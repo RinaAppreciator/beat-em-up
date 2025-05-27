@@ -7,6 +7,7 @@ public class hitbox : MonoBehaviour
 
     public GameObject player;
     public fight playerScript;
+    public Move movement;
     public Hurt selfHurtBox;
     public Animator anim;
     public bool hiti;
@@ -63,14 +64,24 @@ public class hitbox : MonoBehaviour
             Debug.Log("hitting player");
 
             hurt.player.GetSlowdown(h, impactHit, damage);
-            playerScript.score += 2000;
+
+         
         }
         if (hurt.enemy != null)
         {
+            Debug.Log("found enemy hitbox");
             hurt.enemy.Slowdown(h, impactHit, damage);
-            playerScript.score += 3000;
+            
         }
-        playerScript.Slowdown();
+
+        if (playerScript != null)
+        {
+            playerScript.Slowdown();
+
+            
+        }
+
+        //playerScript.Slowdown();
         //anim.speed = 0.6f; // Reduce animation speed (0.2x slower)
         //Invoke("RestoreSpeed", 1f); // Restore normal speed after 2 seconds
     }

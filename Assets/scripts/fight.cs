@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
+
 
 public class fight : MonoBehaviour
 {
@@ -57,15 +58,15 @@ public class fight : MonoBehaviour
         gotHit = false;
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
-        baseLayerIndex = moves.GetLayerIndex("Base");
-        grabLayerIndex = moves.GetLayerIndex("Grab");
+        //baseLayerIndex = moves.GetLayerIndex("Base");
+        //grabLayerIndex = moves.GetLayerIndex("Grab");
         chain = 0;
         moves.SetBool("Alive", true);
     }
 
     public void Update()
     {
-        PlayerManager.Instance.RegisterPlayer(transform);
+        //PlayerManager.Instance.RegisterPlayer(transform);
 
         if (transform.position.y < -10.0f)
         {
@@ -78,25 +79,14 @@ public class fight : MonoBehaviour
             PlayerManager.Instance.UnregisterPlayer(transform);
             StartCoroutine(WaitForDeath());
         }
-        
-        // Corrida (animação)
-        if (movement.running == true)
-        {
-            moves.SetBool("Running", true);
-        }
 
-        if (movement.running == false)
+        CheckRecover();
+        
+        if (state.atk == true)
         {
-            moves.SetBool("Running", false);
+           //StartCoroutine(hitRecover());
         }
-        if(movement.isGrounded == true)
-        {
-            moves.SetBool("OnAir", false);
-        }
-        if (movement.isGrounded == false)
-        {
-            moves.SetBool("OnAir", true);
-        }
+       
 
         if (chain > 0)
         {
@@ -142,93 +132,150 @@ public class fight : MonoBehaviour
         }
     }
 
+    public void CheckRecover()
+    {
+        if (state.ableBodied)
+        {
+            recovered = true;
+            //gotHit = false;
+            OnTheGroundHurt = false;
+            //moves.SetBool("Recovered", true);
+
+
+            //StartCoroutine(ResetRecover());
+        }
+    }
+
     #region player input
 
     public void LightAttackInput(InputAction.CallbackContext context)
     {
-        if (context.started && state.atk == false && chain == 0 && !isGrabbing )
+        if (context.started && state.atk == false && chain == 0 && state.ableBodied && state.airAtk == false)
         {
-            Debug.Log("first attack");
-            moves.Play("Light1");
-            chain += 1;
+            if (movement.isGrounded == false)
+            {
+
+                moves.Play("Air_Jab");
+            }
+
+            else
+            {
+                moves.Play("Slash");
+            }
         }
 
 
-        if (context.started && state.atk == false && chain == 1 && state.followup && !isGrabbing)
-        {
-            Debug.Log("second attack");
-            moves.Play("Light3");
-            chain += 1;
-        }
+        //if (context.started && state.atk == false && chain == 1 && state.followup && !isGrabbing)
+        // {
+        //Debug.Log("second attack");
+        //moves.Play("Light3");
+        //chain += 1;
+        //}
 
 
-        if (context.started && state.atk == false && chain == 2 && state.followup && !isGrabbing )
-        {
-            Debug.Log("third attack");
-            moves.Play("Light2");
-            chain = 0;
-           
-        }
+        // if (context.started && state.atk == false && chain == 2 && state.followup && !isGrabbing )
+        //  {
+        // Debug.Log("third attack");
+        //moves.Play("Light2");
+        // chain = 0;
 
     }
 
+
+
     public void HeavyAttackInput(InputAction.CallbackContext context )
     {
-        if (context.started && state.atk == false && chain == 0 && !isGrabbing )
+        if (context.started && state.atk == false && chain == 0 && state.ableBodied && state.airAtk == false )
         {
-            moves.Play("Heavy1");
-            chain += 1;
+            if (movement.isGrounded == false )
+            {
+
+                moves.Play("Air_Heavy");
+            }
+
+            else
+            {
+                moves.Play("Overhead");
+            }
+
+       
         }
 
-        if (context.started && state.atk == false && chain == 1 && state.followup && !isGrabbing)
-        {
-            moves.Play("Heavy3");
-            chain += 1;
-        }
-
-        if (context.started && state.atk == false && chain == 2 && state.followup && !isGrabbing)
-        {
-            moves.Play("Heavy2");
-            chain = 0;
-        }
     }
 
     public void LauncherAttackInput(InputAction.CallbackContext context)
     {
-        if (context.started && state.atk == false && !isGrabbing)
+        if (context.started && state.atk == false && state.ableBodied && state.airAtk == false)
         {
-        
-            moves.Play("Uppercut");
+
+
+            if (movement.isGrounded == false)
+            {
+
+                moves.Play("Air_Slash");
+            }
+
+            else
+            {
+                moves.Play("Poke");
+            }
+
+ 
 
         }
     }
 
     public void ShootAttackInput(InputAction.CallbackContext context)
     {
-        if (context.started && state.atk == false && !isGrabbing)
+        if (context.started && state.atk == false && state.ableBodied && state.airAtk == false)
         {
 
-            Debug.Log("Shoot");
-            moves.Play("Shoot");
+            if (movement.isGrounded == false)
+            {
+
+                moves.Play("Air_Kick");
+            }
+
+            else
+            {
+                moves.Play("Kick");
+            }
+
 
         }
+    
     }
 
     public void GrabAttackInput(InputAction.CallbackContext context)
     {
-        if (context.started && state.atk == false)
+        if (context.started && state.atk == false && state.ableBodied && state.airAtk == false)
         {
-            if (isGrabbing)
+
+            if (movement.isGrounded == false)
             {
-                Debug.Log("Throwing");
-                moves.Play("Throw");
+
+                moves.Play("Air_Dust");
             }
+
             else
             {
-                Debug.Log("Grabbing");
-                moves.Play("Grab");
+                moves.Play("Uppercut");
             }
-           
+
+
+
+
+            // if (isGrabbing)
+            // {
+            // Debug.Log("Throwing");
+            //  moves.Play("Throw");
+            //  }
+            //  else
+            //      {
+            //    Debug.Log("Grabbing");
+            //    moves.Play("Grab");
+            //  }
+
 
         }
     }
@@ -242,9 +289,12 @@ public class fight : MonoBehaviour
         {
             if (gotHit == true)
             {
-                moves.SetBool("Hurt", false);
-                OnTheGroundHurt = true;
-                Recover();
+                //checking if the player has hit the ground after being thrown in the air. Deprecated for now, will re-enable again later
+
+
+                //moves.SetBool("Hurt", false);
+                //OnTheGroundHurt = true;
+                //Recover();
             }
 
         }
@@ -253,7 +303,9 @@ public class fight : MonoBehaviour
 
     public void Recover()
     {
-  
+        Debug.Log("recovering now");
+        //player is supposedly playing the recover animation at this moment
+        moves.SetBool("Recovering", true);
         StartCoroutine(RecoverTimer());
     
     }   
@@ -261,10 +313,11 @@ public class fight : MonoBehaviour
 
     IEnumerator RecoverTimer()
     {
-        yield return new WaitForSeconds(0.5f);
+        //For when the player is on the ground, hurt
+        yield return new WaitForSeconds(0.8f);
         gotHit = false;
         OnTheGroundHurt = false;
-        moves.SetBool("Recovered", true);
+        //moves.SetBool("Recovered", true);
         StartCoroutine(ResetRecover());
     }
 
@@ -280,7 +333,7 @@ public class fight : MonoBehaviour
 
     public void Slowdown()
     {
-        moves.speed = 0; // Reduce animation speed (0.2x slower)
+        moves.speed = 0; 
         rb.useGravity = false;
         StartCoroutine(RestoreSpeedCoroutine());
     }
@@ -296,12 +349,14 @@ public class fight : MonoBehaviour
 
     public void GetSlowdown(hitbox collision, AudioClip hitSound, float damage)
     {
-
+        //for when the player is hit
+        moves.SetTrigger("Hurt");
         moves.speed = 0; // Reduce animation speed (0.2x slower)
         rb.useGravity = false;
         gotHit = true;
         PlaySound(hitSound);
         hp -= damage;
+        
    
         StartCoroutine(ShakeRoutine(2, collision));
      
@@ -311,6 +366,7 @@ public class fight : MonoBehaviour
 
     IEnumerator RestoreSpeedCoroutine(hitbox collision)
     {
+        // for when the player hits something 
         yield return new WaitForSeconds(0.2f);
         moves.speed = 1f;
         rb.useGravity = true;
@@ -319,22 +375,32 @@ public class fight : MonoBehaviour
 
     IEnumerator ResetRecover()
     {
+        //this is being called every turn, fix it
+
+
+
+        // After the player has recovered and is back on their feet
         Debug.Log("recovery reset");
-        yield return new WaitForSeconds(0.1f);
-        moves.SetBool("Recovered", false);
+        yield return new WaitForSeconds(30f);
+        moves.ResetTrigger("Hurt");
+        moves.SetBool("Recovering", false);
         recovered = false;
+
     }
 
     IEnumerator WaitForDeath()
     {
+        // What happens when the player dies
         yield return new WaitForSeconds(1f);
         Destroy(gameObject);
     }
 
     IEnumerator hitRecover()
     {
+        // Resetting player movement
         yield return new WaitForSeconds(0.5f);
-        state.canWalk = true;
+        state.atk = false;
+        state.ableBodied = true;
     }
 
 
@@ -388,10 +454,12 @@ public class fight : MonoBehaviour
 
         if (gotHit == true)
         {
+            state.ableBodied = false;
+            state.atk = false;
 
-            moves.SetBool("Hurt", true);
+            Debug.Log("got hit, recovering ");
 
-
+            Recover();
 
             //moves.Play("Hitted");
             //gotHit = false;
@@ -416,8 +484,9 @@ public class fight : MonoBehaviour
             if (hitBoxObject.HorizontalKnockback < 2 && hitBoxObject.VerticalKnockback < 2)
             {
                 {
-                    moves.Play("Hurt");
-                    gotHit = false;
+
+                    //moves.Play("Hurt");
+                    //gotHit = false;
                 }
             }
 

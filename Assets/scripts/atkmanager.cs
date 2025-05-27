@@ -4,6 +4,7 @@ using Unity.Collections;
 public class atkmanager : MonoBehaviour
 {
     public bool atk;
+    public bool airAtk;
     public bool stunned;
     private Animator moveset;
     public Rigidbody rb;
@@ -16,6 +17,7 @@ public class atkmanager : MonoBehaviour
     public bool isBeingHit;
     public bool canWalk = true;
     public int chain;
+    public bool ableBodied;
 
 
   
@@ -25,6 +27,8 @@ public class atkmanager : MonoBehaviour
     {
         moveset = GetComponent<Animator>();
         canWalk = true;
+        ableBodied = true;
+    
     }
 
     public void cantWalk()
@@ -40,7 +44,18 @@ public class atkmanager : MonoBehaviour
     public void atacking()
     {
         atk = true;
+        player.moves.SetBool("Attacking", true);
         followup = false;
+    }
+
+    public void airAttacking()
+    {
+        airAtk = true;
+    }
+
+    public void ResetAirAtk()
+    {
+        airAtk = false;
     }
 
     public void throwing()
@@ -51,6 +66,20 @@ public class atkmanager : MonoBehaviour
     }
 
     // Code for dropping items 
+
+
+    public void Disable()
+    {
+        Debug.Log("got disabled");
+        ableBodied = false;
+    }
+
+    public void Enable()
+    {
+        Debug.Log("got enabled");
+        ableBodied = true;
+    }
+
 
     public void dropping()
     {
@@ -64,8 +93,9 @@ public class atkmanager : MonoBehaviour
     public void attackReset()
    {
     atk = false;
+        player.moves.SetBool("Attacking", false);
 
-   }
+    }
    
    
 
