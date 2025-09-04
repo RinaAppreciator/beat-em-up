@@ -447,17 +447,6 @@
                 },
                 {
                     "name": "",
-                    "id": "1231b306-e3c5-4259-b70c-ae8a086cb057",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Pause",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "5ff511b0-176a-4fa3-8b8b-6db6e101052d",
                     "path": "<Gamepad>/start",
                     "interactions": "",
@@ -514,7 +503,7 @@
                 {
                     "name": "",
                     "id": "450fcf78-92fa-4178-81bb-968026673f6f",
-                    "path": "<Keyboard>/u",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
@@ -557,6 +546,28 @@
                 },
                 {
                     "name": "",
+                    "id": "9c9a00a5-3326-4865-9ff0-9e9b7a705f01",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Modifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d74e6c44-7a40-42e5-bf32-3ab2290e4aad",
+                    "path": "<HID::ShanWan Wireless Gamepad>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Modifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "a590e3d0-1872-4d5b-a99d-8044d186314f",
                     "path": "<Gamepad>/select",
                     "interactions": "",
@@ -573,6 +584,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0877df6c-f8cc-44e7-8f17-7ca77c4bc6b3",
+                    "path": "<HID::ShanWan Wireless Gamepad>/button9",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
