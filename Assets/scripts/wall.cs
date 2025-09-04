@@ -17,6 +17,8 @@ public class wall : MonoBehaviour
 
     public AudioClip groundExplosion;
 
+    public AudioClip wallBounceSound;
+
     [SerializeField] private cameraManager cameraManager;
 
     public GameObject wallPlayer;
@@ -62,6 +64,8 @@ public class wall : MonoBehaviour
             {
                 pushObject(rb, playerScript, isXDominant, isZDominant);
                 playerScript.bounceWall(true);
+                playSound(wallBounceSound);
+                shakeGround(0.1f, 0.5f, 0.1f);
                 //Debug.Log("Can bounce");
             }
 
@@ -70,7 +74,7 @@ public class wall : MonoBehaviour
                 if (!hasPushed)
                 {
                     playSound(groundExplosion);
-                    shakeGround(1, 1, 1);
+                    shakeGround(0.2f, 1, 0.2f);
                     playerScript.wallStick();
                     hasPushed = true;
                     resetBounce(true);

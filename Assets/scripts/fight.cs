@@ -406,6 +406,12 @@ public class fight : MonoBehaviour
             moves.Play("Block");
         }
 
+        if (SlashInputBuffered && KickInputBuffered && PunchInputBuffered && HeavyInputBuffered)
+        {
+            faceEnemy();
+            moves.Play("Super");
+        }
+
 
     }
 

@@ -23,6 +23,7 @@ public class ground : MonoBehaviour
     public bool hasPushed;
 
     public AudioClip groundExplosion;
+    public AudioClip flatSound;
 
     [SerializeField] private cameraManager cameraManager;
 
@@ -119,11 +120,13 @@ public class ground : MonoBehaviour
             playerScript.bounceWall(false);
             hasPushed = true;
             StartCoroutine(resetbounce());
+            playSound(groundExplosion);
             //Debug.Log("pushed off ground");
         }
 
         if (playerScript.canGroundBounce && maxBounces == playerScript.bounces && !hasPushed)
         {
+            playSound(flatSound);
             //Debug.Log("KO");
             playerScript.getKO();
             hasPushed = true;

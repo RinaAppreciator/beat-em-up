@@ -59,7 +59,7 @@ public class comboCounter : MonoBehaviour
             case 5:
                 {
                     Debug.Log("purple");
-                    spriteRenderer.color = new Color(255, 0, 255);
+                    spriteRenderer.color = new Color(255, 0, 0);
                     break;
                 }
             case 6:
